@@ -1,5 +1,47 @@
 # HydroMATE - Capstone Project 2024/2025
 
+## PID Controller: Assigning kp, ki, and kd Values
+
+The PID controller adjusts the robot's motion to ensure smooth line following and accurate alignment. The values for **kp**, **ki**, and **kd** can be assigned as follows:
+
+### Step-by-Step Process:
+1. **Set Initial Values**:
+   - Start with only the proportional term:
+     ```python
+     kp = 1.0
+     ki = 0.0
+     kd = 0.0
+     ```
+
+2. **Tune Proportional Gain (kp)**:
+   - Gradually increase **kp** until the robot responds quickly to deviations without overshooting significantly.
+   - Example:
+     ```python
+     kp = 2.0  # Adjust based on testing
+     ```
+
+3. **Add Integral Gain (ki)**:
+   - Slowly increase **ki** to eliminate steady-state errors (e.g., drifting off the line).
+   - Example:
+     ```python
+     ki = 0.1  # Adjust based on testing
+     ```
+
+4. **Add Derivative Gain (kd)**:
+   - Gradually increase **kd** to dampen oscillations and smooth the response.
+   - Example:
+     ```python
+     kd = 0.5  # Adjust based on testing
+     ```
+
+### Final Values:
+After tuning, the values might look like:
+```python
+kp = 2.0
+ki = 0.1
+kd = 0.5
+```
+
 ## Raspberry Pi: Receive Stream and Forward via Node-RED
 Install Required Software
 
