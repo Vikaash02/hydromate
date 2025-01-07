@@ -6,10 +6,10 @@ import subprocess
 # GPIO Pin Configuration
 motor_pins = {
     "left_motor": {"A": 5, "B": 6},  # Pins for left motor
-    "right_motor": {"A": 21, "B": 22},  # Pins for right motor
+    "right_motor": {"A": 23, "B": 24},  # Pins for right motor
 }
 ir_sensors = {"left": 17, "right": 27}
-ultrasonic_pins = {"trigger": 19, "echo": 20}
+ultrasonic_pins = {"trigger": 20, "echo": 21}
 
 # PID Controller Variables
 kp = 1.0  # Proportional gain
@@ -20,8 +20,9 @@ integral = 0
 
 # State Variables
 line_counter = 0
-current_position = 0  # Tracks position on the line
+current_checkpoint = 0  # Tracks current checkpoint
 refill_needed = False
+water_refilled = False  # Tracks if water has been refilled
 
 # GPIO Setup
 GPIO.setmode(GPIO.BCM)
@@ -34,10 +35,6 @@ for motor, pins in motor_pins.items():
 
 # Motor Control Functions
 def set_motor_speed(motor, speed):
-    """
-    Adjust motor speed and direction based on PID output.
-    `speed` is positive for forward and negative for backward.
-    """
     pins = motor_pins[motor]
     if speed > 0:  # Forward
         GPIO.output(pins["A"], GPIO.HIGH)
@@ -105,17 +102,18 @@ def check_water_level():
 
 # Line Following Logic
 def follow_line():
-    global line_counter, current_position
+    global line_counter, current_checkpoint, refill_needed, water_refilled
 
     while True:
         left_ir = GPIO.input(ir_sensors["left"])
         right_ir = GPIO.input(ir_sensors["right"])
 
-        if left_ir and right_ir:  # Both sensors detect line (stop sign)
-            print("Stop sign detected.")
+        if left_ir and right_ir:  # Both sensors detect line (checkpoint)
+            print(f"Checkpoint {line_counter} detected.")
             stop_motors()
             line_counter += 1
-            subprocess.run(["python3", "secondary_process.py"])  # Run another script
+            current_checkpoint = line_counter
+            subprocess.run(["python3", "secondary_process.py"])  # Run secondary process
             time.sleep(1)  # Wait for the process to complete
         elif left_ir or right_ir:  # Adjust based on PID
             pid_control(left_ir, right_ir)
@@ -123,32 +121,46 @@ def follow_line():
             set_motor_speed("left_motor", 50)
             set_motor_speed("right_motor", 50)
 
+        # Check water level
+        if refill_needed:
+            handle_refill()
+
         time.sleep(0.1)
 
 # Refill Logic
 def handle_refill():
-    global line_counter, current_position
+    global line_counter, current_checkpoint, refill_needed, water_refilled
 
-    if refill_needed:
-        print("Refill needed. Moving to refill station.")
-        stop_motors()
-        while get_distance() > 10:  # Move backward until near refill station
-            set_motor_speed("left_motor", -50)  # Negative speed for backward
-            set_motor_speed("right_motor", -50)
-        stop_motors()
+    print("Refill needed. Moving to start position.")
+    stop_motors()
 
-        print("At refill station. Waiting for tank to refill.")
-        while refill_needed:
-            check_water_level()
-            time.sleep(1)
+    # Move backward to start (checkpoint 0)
+    while current_checkpoint > 0:
+        set_motor_speed("left_motor", -50)  # Negative speed for backward
+        set_motor_speed("right_motor", -50)
+        time.sleep(1)
+        current_checkpoint -= 1  # Simulate reaching the previous checkpoint
 
-        print("Tank refilled. Returning to last stop.")
-        for _ in range(line_counter):  # Return to the original line count
-            set_motor_speed("left_motor", 50)
-            set_motor_speed("right_motor", 50)
-            time.sleep(1)  # Simulate returning
+    stop_motors()
 
-        print("Back to position. Resuming process.")
+    print("At refill station. Refilling water tank.")
+    while refill_needed:
+        check_water_level()
+        time.sleep(1)
+
+    water_refilled = True
+    print("Tank refilled. Returning to last checkpoint.")
+
+    # Move forward to last checkpoint
+    while current_checkpoint < line_counter:
+        set_motor_speed("left_motor", 50)
+        set_motor_speed("right_motor", 50)
+        time.sleep(1)
+        current_checkpoint += 1  # Simulate reaching the next checkpoint
+
+    stop_motors()
+    print(f"Returned to checkpoint {line_counter}. Resuming process.")
+    water_refilled = False
 
 # Main Function
 if __name__ == "__main__":
@@ -157,7 +169,7 @@ if __name__ == "__main__":
         threading.Thread(target=follow_line, daemon=True).start()
         while True:
             check_water_level()
-            if refill_needed:
+            if refill_needed and not water_refilled:
                 handle_refill()
             time.sleep(1)
 
