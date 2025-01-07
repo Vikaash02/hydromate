@@ -5,11 +5,11 @@ import subprocess
 
 # GPIO Pin Configuration
 motor_pins = {
-    "left_motor": {"pwm": 12, "dir1": 5, "dir2": 6},
-    "right_motor": {"pwm": 13, "dir1": 23, "dir2": 24},
+    "left_motor": {"A": 5, "B": 6},  # Pins for left motor
+    "right_motor": {"A": 21, "B": 22},  # Pins for right motor
 }
 ir_sensors = {"left": 17, "right": 27}
-ultrasonic_pins = {"trigger": 20, "echo": 21}
+ultrasonic_pins = {"trigger": 19, "echo": 20}
 
 # PID Controller Variables
 kp = 1.0  # Proportional gain
@@ -29,35 +29,34 @@ GPIO.setwarnings(False)
 
 # Motor Setup
 for motor, pins in motor_pins.items():
-    GPIO.setup(pins["pwm"], GPIO.OUT)
-    GPIO.setup(pins["dir1"], GPIO.OUT)
-    GPIO.setup(pins["dir2"], GPIO.OUT)
-
-pwm_controls = {}
-for motor, pins in motor_pins.items():
-    pwm_controls[motor] = GPIO.PWM(pins["pwm"], 100)  # 100 Hz PWM frequency
-    pwm_controls[motor].start(0)
-
-# IR Sensors and Ultrasonic Sensor Setup
-for sensor in ir_sensors.values():
-    GPIO.setup(sensor, GPIO.IN)
-GPIO.setup(ultrasonic_pins["trigger"], GPIO.OUT)
-GPIO.setup(ultrasonic_pins["echo"], GPIO.IN)
+    GPIO.setup(pins["A"], GPIO.OUT)
+    GPIO.setup(pins["B"], GPIO.OUT)
 
 # Motor Control Functions
-def set_motor_speed(motor, speed, direction):
+def set_motor_speed(motor, speed):
+    """
+    Adjust motor speed and direction based on PID output.
+    `speed` is positive for forward and negative for backward.
+    """
     pins = motor_pins[motor]
-    GPIO.output(pins["dir1"], GPIO.HIGH if direction == "forward" else GPIO.LOW)
-    GPIO.output(pins["dir2"], GPIO.LOW if direction == "forward" else GPIO.HIGH)
-    pwm_controls[motor].ChangeDutyCycle(abs(speed))
+    if speed > 0:  # Forward
+        GPIO.output(pins["A"], GPIO.HIGH)
+        GPIO.output(pins["B"], GPIO.LOW)
+    elif speed < 0:  # Backward
+        GPIO.output(pins["A"], GPIO.LOW)
+        GPIO.output(pins["B"], GPIO.HIGH)
+    else:  # Stop
+        GPIO.output(pins["A"], GPIO.LOW)
+        GPIO.output(pins["B"], GPIO.LOW)
 
 def stop_motors():
     for motor in motor_pins:
-        pwm_controls[motor].ChangeDutyCycle(0)
+        GPIO.output(motor_pins[motor]["A"], GPIO.LOW)
+        GPIO.output(motor_pins[motor]["B"], GPIO.LOW)
 
 # PID Controller
 def pid_control(left_ir, right_ir):
-    global previous_error, integral
+    global previous_error, integral, kp, ki, kd
 
     error = right_ir - left_ir
     integral += error
@@ -68,8 +67,15 @@ def pid_control(left_ir, right_ir):
 
     # Adjust motor speeds based on PID output
     base_speed = 50  # Base motor speed
-    set_motor_speed("left_motor", base_speed - adjustment, "forward")
-    set_motor_speed("right_motor", base_speed + adjustment, "forward")
+    left_speed = base_speed - adjustment
+    right_speed = base_speed + adjustment
+
+    # Clamp motor speeds
+    left_speed = max(-100, min(100, left_speed))
+    right_speed = max(-100, min(100, right_speed))
+
+    set_motor_speed("left_motor", left_speed)
+    set_motor_speed("right_motor", right_speed)
 
 # Ultrasonic Sensor Functions
 def get_distance():
@@ -114,8 +120,8 @@ def follow_line():
         elif left_ir or right_ir:  # Adjust based on PID
             pid_control(left_ir, right_ir)
         else:  # No line detected, move forward
-            set_motor_speed("left_motor", 50, "forward")
-            set_motor_speed("right_motor", 50, "forward")
+            set_motor_speed("left_motor", 50)
+            set_motor_speed("right_motor", 50)
 
         time.sleep(0.1)
 
@@ -127,8 +133,8 @@ def handle_refill():
         print("Refill needed. Moving to refill station.")
         stop_motors()
         while get_distance() > 10:  # Move backward until near refill station
-            set_motor_speed("left_motor", 50, "backward")
-            set_motor_speed("right_motor", 50, "backward")
+            set_motor_speed("left_motor", -50)  # Negative speed for backward
+            set_motor_speed("right_motor", -50)
         stop_motors()
 
         print("At refill station. Waiting for tank to refill.")
@@ -138,8 +144,8 @@ def handle_refill():
 
         print("Tank refilled. Returning to last stop.")
         for _ in range(line_counter):  # Return to the original line count
-            set_motor_speed("left_motor", 50, "forward")
-            set_motor_speed("right_motor", 50, "forward")
+            set_motor_speed("left_motor", 50)
+            set_motor_speed("right_motor", 50)
             time.sleep(1)  # Simulate returning
 
         print("Back to position. Resuming process.")
