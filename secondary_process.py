@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import spidev  # For ADC like MCP3008
 import time
 import requests
+import subprocess
 
 # GPIO Configuration
 motor_pins = {"dir": 16, "step": 18}  # NEMA 17 Stepper Motor Pins
@@ -74,6 +75,14 @@ def send_data_to_nodered(moisture, humidity):
     except Exception as e:
         print(f"Error sending data to Node-RED: {e}")
 
+#  Node red display process
+def run_node_red_display():
+    try:
+        # Command to execute the NodeRED display script
+        subprocess.run(["python3", "node_red_display.py"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running NodeRED display: {e}")
+
 # Main Process
 def perform_secondary_process():
     print("Starting secondary process...")
@@ -116,6 +125,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Process interrupted.")
     finally:
+        print("Executing NodeRED display subprocess...")
+        run_node_red_display()
         control_pump("off")
         spi.close()
         GPIO.cleanup()
