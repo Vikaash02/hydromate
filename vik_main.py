@@ -5,6 +5,7 @@ import importlib
 # For NodeRED interface
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import threading
 
 # GPIO Pin Configuration for Motors
 motor_pins = {
@@ -232,7 +233,7 @@ class SensorRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 # Start the HTTP server
-def run_server():
+def start_http_server():
     server_address = ('0.0.0.0', 5000)
     httpd = HTTPServer(server_address, SensorRequestHandler)
     print("Starting HTTP server on port 5000...")
@@ -240,7 +241,9 @@ def run_server():
 
 # Main Control Logic
 try:
-    run_server()
+    http_thread = threading.Thread(target=start_http_server, daemon=True)
+    http_thread.start()
+
     print("Starting Control Test.")
     black_line_detected = 0  # Counter to detect black lines
 
