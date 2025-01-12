@@ -156,6 +156,7 @@ def run_water_pump_process():
             stop_count = 0
 
 # Function for reading water level
+# Function for reading water level and converting it to a percentage
 def read_water_level():
     GPIO.output(TRIG, False)
     time.sleep(0.1)
@@ -170,8 +171,23 @@ def read_water_level():
         pulse_end = time.time()
 
     pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150
-    data["water_level"] = round(distance, 2)
+    distance = pulse_duration * 17150  # Convert time of flight to distance in cm
+
+    # Define maximum and minimum distances (adjust these based on your setup)
+    max_distance = 100.0  # Example: 100 cm (tank full)
+    min_distance = 10.0   # Example: 10 cm (tank empty)
+
+    # Clamp the distance to the defined range
+    clamped_distance = max(min_distance, min(max_distance, distance))
+
+    # Calculate the percentage
+    percentage = ((max_distance - clamped_distance) / (max_distance - min_distance)) * 100
+
+    # Update the data dictionary
+    data["water_level"] = round(percentage, 2)
+
+    # Print the water level percentage
+    print(f"Water Level: {data['water_level']}%")
 
 # Function for reading soil moisture
 def read_soil_moisture():
