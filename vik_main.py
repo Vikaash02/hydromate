@@ -190,34 +190,44 @@ def read_water_level():
     print(f"Water Level: {data['water_level']}%")
 
 # Function for reading soil moisture
+# Function for reading soil moisture and converting it to a percentage
 def read_soil_moisture():
     wet_time = 0
     dry_time = 0
     start_time = time.time()
     
-    # Read the current state
-    state = GPIO.input(SOIL_PIN)
+    # Define the duration for reading soil moisture (e.g., 1 second)
+    read_duration = 1.0
+    end_time = start_time + read_duration
+
+    # Continuously read the soil sensor state during the read duration
+    while time.time() < end_time:
+        state = GPIO.input(SOIL_PIN)  # Read the current state (0 = wet, 1 = dry)
         
-    # Update time counters
-    current_time = time.time()
-    if state == 0:  # Wet state
-        wet_time += current_time - start_time
-    else:  # Dry state
-        dry_time += current_time - start_time
+        current_time = time.time()
+        if state == 0:  # Wet state
+            wet_time += current_time - start_time
+        else:  # Dry state
+            dry_time += current_time - start_time
         
-    # Reset start_time for the next loop
-    start_time = current_time
-        
-    # Calculate percentage of wetness
+        # Update the start time for the next loop
+        start_time = current_time
+
+    # Calculate the total time
     total_time = wet_time + dry_time
+
+    # Calculate the moisture percentage (wet time as a percentage of total time)
     if total_time > 0:
         moisture_percentage = (wet_time / total_time) * 100
     else:
-        moisture_percentage = 0  # Default at startup
-        
-    # Print the moisture percentage
-    data["soil_moisture"] = moisture_percentage
-    time.sleep(1)
+        moisture_percentage = 0  # Default if no time recorded
+
+    # Update the data dictionary
+    data["soil_moisture"] = round(moisture_percentage, 2)
+
+    # Print the soil moisture percentage
+    print(f"Soil Moisture: {data['soil_moisture']}%")
+
 
 # HTTP request handler
 class SensorRequestHandler(BaseHTTPRequestHandler):
