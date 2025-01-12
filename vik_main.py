@@ -158,41 +158,53 @@ def run_water_pump_process():
 
 
 # Function for reading water level
-# Function for reading water level and converting it to a percentage
 def read_water_level():
+    """
+    Reads the water level using an ultrasonic sensor and calculates the remaining level as a percentage.
+    """
+    # Trigger the ultrasonic sensor
     GPIO.output(TRIG, False)
-    time.sleep(0.1)
+    time.sleep(0.1)  # Short delay to ensure stability
 
     GPIO.output(TRIG, True)
-    time.sleep(0.00001)
+    time.sleep(0.00001)  # Send a 10µs pulse
     GPIO.output(TRIG, False)
 
-    while GPIO.input(ECHO) == 0:
-        pulse_start = time.time()
-    while GPIO.input(ECHO) == 1:
-        pulse_end = time.time()
+    try:
+        # Measure the echo response time
+        while GPIO.input(ECHO) == 0:
+            pulse_start = time.time()
+        while GPIO.input(ECHO) == 1:
+            pulse_end = time.time()
 
-    pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150  # Convert time of flight to distance in cm
+        # Calculate the distance based on the pulse duration
+        pulse_duration = pulse_end - pulse_start
+        distance = pulse_duration * 17150  # Convert to cm
 
-    # Define maximum and minimum distances (adjust these based on your setup)
-    max_distance = 100.0  # Example: 100 cm (tank full)
-    min_distance = 10.0   # Example: 10 cm (tank empty)
+        # Define the tank's distance range
+        max_distance = 100.0  # Distance when the tank is empty (adjust to your setup)
+        min_distance = 10.0   # Distance when the tank is full (adjust to your setup)
 
-    # Clamp the distance to the defined range
-    clamped_distance = max(min_distance, min(max_distance, distance))
+        # Clamp the distance to avoid invalid readings
+        clamped_distance = max(min_distance, min(max_distance, distance))
 
-    # Calculate the percentage
-    percentage = ((max_distance - clamped_distance) / (max_distance - min_distance)) * 100
+        # Calculate the water level as a percentage
+        percentage = ((max_distance - clamped_distance) / (max_distance - min_distance)) * 100
+        percentage = max(0, min(100, percentage))  # Ensure percentage stays between 0% and 100%
 
-    # Update the data dictionary
-    data["water_level"] = round(percentage, 2)
+        # Update the data dictionary with the calculated water level
+        data["water_level"] = round(percentage, 2)
 
-    # Print the water level percentage
-    print(f"Water Level: {data['water_level']}%")
+        # Print the water level percentage for debugging
+        print(f"Water Level: {data['water_level']}%")
+
+    except Exception as e:
+        # Handle errors (e.g., sensor timeout or invalid readings)
+        print(f"Error reading ultrasonic sensor: {e}")
+        data["water_level"] = -1  # Indicate an error with a negative value
+
 
 # Function for reading soil moisture
-# Function for reading soil moisture and converting it to a percentage
 def read_soil_moisture():
     wet_time = 0
     dry_time = 0
