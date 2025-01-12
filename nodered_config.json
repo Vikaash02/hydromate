@@ -16,226 +16,40 @@
         "hidden": false
     },
     {
-        "id": "82873a570b2d2b4d",
-        "type": "ui_base",
-        "theme": {
-            "name": "theme-light",
-            "lightTheme": {
-                "default": "#0094CE",
-                "baseColor": "#0094CE",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "edited": true,
-                "reset": false
-            },
-            "darkTheme": {
-                "default": "#097479",
-                "baseColor": "#097479",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "edited": true,
-                "reset": false
-            },
-            "customTheme": {
-                "name": "Untitled Theme 1",
-                "default": "#4B7930",
-                "baseColor": "#4B7930",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-            },
-            "themeState": {
-                "base-color": {
-                    "default": "#0094CE",
-                    "value": "#0094CE",
-                    "edited": false
-                },
-                "page-titlebar-backgroundColor": {
-                    "value": "#0094CE",
-                    "edited": false
-                },
-                "page-backgroundColor": {
-                    "value": "#fafafa",
-                    "edited": false
-                },
-                "page-sidebar-backgroundColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "group-textColor": {
-                    "value": "#1bbfff",
-                    "edited": false
-                },
-                "group-borderColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "group-backgroundColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "widget-textColor": {
-                    "value": "#111111",
-                    "edited": false
-                },
-                "widget-backgroundColor": {
-                    "value": "#0094ce",
-                    "edited": false
-                },
-                "widget-borderColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "base-font": {
-                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-                }
-            },
-            "angularTheme": {
-                "primary": "indigo",
-                "accents": "blue",
-                "warn": "red",
-                "background": "grey",
-                "palette": "light"
-            }
-        },
-        "site": {
-            "name": "Node-RED Dashboard",
-            "hideToolbar": "false",
-            "allowSwipe": "false",
-            "lockMenu": "false",
-            "allowTempTheme": "true",
-            "dateFormat": "DD/MM/YYYY",
-            "sizes": {
-                "sx": 48,
-                "sy": 48,
-                "gx": 6,
-                "gy": 6,
-                "cx": 6,
-                "cy": 6,
-                "px": 0,
-                "py": 0
-            }
-        }
-    },
-    {
         "id": "1cbf5e8d47230cb8",
         "type": "ui_group",
-        "name": "Sensor NodeRED Test",
+        "name": "Sensor Data",
         "tab": "7665c19fdeaba3d2",
-        "order": 3,
+        "order": 1,
         "disp": true,
         "width": 6,
-        "collapse": false,
-        "className": ""
+        "collapse": false
     },
     {
         "id": "42c1300ca8929c56",
         "type": "ui_group",
         "name": "Robot Control",
         "tab": "7665c19fdeaba3d2",
-        "order": 1,
+        "order": 2,
         "disp": true,
         "width": 6,
-        "collapse": false,
-        "className": ""
+        "collapse": false
     },
     {
         "id": "4e7ad4799933e692",
         "type": "ui_group",
-        "name": "Live Stream for Monitoring",
+        "name": "Live Monitoring",
         "tab": "7665c19fdeaba3d2",
-        "order": 2,
+        "order": 3,
         "disp": true,
-        "width": 6,
-        "collapse": false,
-        "className": ""
-    },
-    {
-        "id": "2c11dcbfd175f04d",
-        "type": "http request",
-        "z": "310d8a4d72ef4192",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "http://127.0.1.1:5000/sensor-data",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 310,
-        "y": 220,
-        "wires": [
-            [
-                "a608df925db27951"
-            ]
-        ]
-    },
-    {
-        "id": "a608df925db27951",
-        "type": "json",
-        "z": "310d8a4d72ef4192",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 490,
-        "y": 220,
-        "wires": [
-            [
-                "522b7d9577bfd070",
-                "8c899cc585f74894",
-                "2d64600c3bd3a861",
-                "3c9eea5cb01daaaf"
-            ]
-        ]
-    },
-    {
-        "id": "522b7d9577bfd070",
-        "type": "ui_text",
-        "z": "310d8a4d72ef4192",
-        "group": "42c1300ca8929c56",
-        "order": 0,
-        "width": "6",
-        "height": "1",
-        "name": "",
-        "label": "IR Sensor Status",
-        "format": "{{msg.payload.ir_status}}",
-        "layout": "row-spread",
-        "className": "",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#000000",
-        "x": 690,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "8c899cc585f74894",
-        "type": "ui_text",
-        "z": "310d8a4d72ef4192",
-        "group": "42c1300ca8929c56",
-        "order": 1,
-        "width": "6",
-        "height": "1",
-        "name": "",
-        "label": "Ultrasonic Distance",
-        "format": "{{msg.payload.ultrasonic_distance}}",
-        "layout": "row-spread",
-        "className": "",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#000000",
-        "x": 690,
-        "y": 280,
-        "wires": []
+        "width": 12,
+        "collapse": false
     },
     {
         "id": "a93359d5502fa592",
         "type": "inject",
         "z": "310d8a4d72ef4192",
-        "name": "",
+        "name": "Poll Sensor Data",
         "props": [
             {
                 "p": "payload"
@@ -247,13 +61,13 @@
         ],
         "repeat": "1",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
         "x": 110,
-        "y": 220,
+        "y": 40,
         "wires": [
             [
                 "2c11dcbfd175f04d"
@@ -261,19 +75,141 @@
         ]
     },
     {
+        "id": "2c11dcbfd175f04d",
+        "type": "http request",
+        "z": "310d8a4d72ef4192",
+        "name": "Get Sensor Data",
+        "method": "GET",
+        "ret": "obj",
+        "url": "http://127.0.0.1:5000/sensor-data",
+        "tls": "",
+        "x": 310,
+        "y": 40,
+        "wires": [
+            [
+                "a608df925db27951"
+            ]
+        ]
+    },
+    {
+        "id": "a608df925db27951",
+        "type": "json",
+        "z": "310d8a4d72ef4192",
+        "name": "Parse JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 490,
+        "y": 40,
+        "wires": [
+            [
+                "522b7d9577bfd070",
+                "8c899cc585f74894",
+                "3c9eea5cb01daaaf"
+            ]
+        ]
+    },
+    {
+        "id": "522b7d9577bfd070",
+        "type": "ui_text",
+        "z": "310d8a4d72ef4192",
+        "group": "1cbf5e8d47230cb8",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "IR Sensor Status",
+        "label": "IR Status:",
+        "format": "{{msg.payload.ir_status}}",
+        "layout": "row-spread",
+        "x": 710,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "8c899cc585f74894",
+        "type": "ui_text",
+        "z": "310d8a4d72ef4192",
+        "group": "1cbf5e8d47230cb8",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "Ultrasonic Distance",
+        "label": "Distance (cm):",
+        "format": "{{msg.payload.ultrasonic_distance}}",
+        "layout": "row-spread",
+        "x": 710,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3c9eea5cb01daaaf",
+        "type": "ui_text",
+        "z": "310d8a4d72ef4192",
+        "group": "1cbf5e8d47230cb8",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "Soil Moisture",
+        "label": "Soil Moisture (%):",
+        "format": "{{msg.payload.soil_moisture}}",
+        "layout": "row-spread",
+        "x": 710,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "2d64600c3bd3a861",
+        "type": "ui_gauge",
+        "z": "310d8a4d72ef4192",
+        "group": "1cbf5e8d47230cb8",
+        "order": 4,
+        "width": 6,
+        "height": 4,
+        "name": "Moisture Gauge",
+        "gtype": "gage",
+        "title": "Soil Moisture",
+        "label": "%",
+        "format": "{{msg.payload.soil_moisture}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "x": 710,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "8e0a0e346460b20a",
+        "type": "ui_template",
+        "z": "310d8a4d72ef4192",
+        "group": "4e7ad4799933e692",
+        "name": "ESP32-CAM",
+        "order": 1,
+        "width": 12,
+        "height": 10,
+        "format": "<iframe \n    src=\"http://192.168.33.10\" \n    width=\"100%\" \n    height=\"100%\" \n    style=\"border: none;\">\n</iframe>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 710,
+        "y": 480,
+        "wires": []
+    },
+    {
         "id": "808c162894a4b2f9",
         "type": "exec",
         "z": "310d8a4d72ef4192",
-        "command": "python3 /home/Hydromate/Documents/main.py",
+        "command": "python3 /path/to/main.py",
         "addpay": "",
         "append": "",
         "useSpawn": "false",
-        "timer": "",
-        "winHide": false,
-        "oldrc": false,
-        "name": "Execute main.py",
-        "x": 690,
-        "y": 40,
+        "name": "Start Robot",
+        "x": 710,
+        "y": 300,
         "wires": [
             [],
             [],
@@ -284,24 +220,18 @@
         "id": "29fe1c0c6203ec5f",
         "type": "ui_button",
         "z": "310d8a4d72ef4192",
-        "name": "",
         "group": "42c1300ca8929c56",
-        "order": 0,
-        "width": "3",
-        "height": "1",
-        "passthru": false,
-        "label": "Start Robot",
-        "tooltip": "",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "name": "Start Robot",
+        "label": "Start",
         "color": "",
         "bgcolor": "",
-        "className": "",
-        "icon": "",
         "payload": "",
         "payloadType": "str",
-        "topic": "topic",
-        "topicType": "msg",
         "x": 110,
-        "y": 40,
+        "y": 300,
         "wires": [
             [
                 "808c162894a4b2f9"
@@ -309,48 +239,21 @@
         ]
     },
     {
-        "id": "8e0a0e346460b20a",
-        "type": "ui_template",
-        "z": "310d8a4d72ef4192",
-        "group": "42c1300ca8929c56",
-        "name": "ESP32-CAM",
-        "order": 2,
-        "width": "6",
-        "height": "12",
-        "format": "<iframe \n    src=\"http://192.168.33.10\" \n    width=\"100%\" \n    height=\"100%\" \n    style=\"border: none;\">\n</iframe>\n",
-        "storeOutMessages": true,
-        "fwdInMessages": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 110,
-        "y": 160,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "35bba7239c07c495",
         "type": "ui_button",
         "z": "310d8a4d72ef4192",
-        "name": "Stop Robot",
         "group": "42c1300ca8929c56",
-        "order": 1,
-        "width": "3",
-        "height": "1",
-        "passthru": false,
-        "label": "Stop Robot",
-        "tooltip": "",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "Stop Robot",
+        "label": "Stop",
         "color": "",
         "bgcolor": "",
-        "className": "",
-        "icon": "",
         "payload": "",
         "payloadType": "str",
-        "topic": "topic",
-        "topicType": "msg",
         "x": 110,
-        "y": 100,
+        "y": 360,
         "wires": [
             [
                 "774b63bf5a229106"
@@ -361,69 +264,17 @@
         "id": "774b63bf5a229106",
         "type": "exec",
         "z": "310d8a4d72ef4192",
-        "command": "kill -9 $(pgrep -f home/Hydromate/Documents/main.py)",
+        "command": "kill -9 $(pgrep -f /path/to/main.py)",
         "addpay": "",
         "append": "",
         "useSpawn": "false",
-        "timer": "",
-        "winHide": false,
-        "oldrc": false,
-        "name": "Kill main.py",
-        "x": 670,
-        "y": 100,
+        "name": "Stop Robot",
+        "x": 710,
+        "y": 360,
         "wires": [
             [],
             [],
             []
         ]
-    },
-    {
-        "id": "3c9eea5cb01daaaf",
-        "type": "ui_text",
-        "z": "310d8a4d72ef4192",
-        "group": "42c1300ca8929c56",
-        "order": 2,
-        "width": "6",
-        "height": "1",
-        "name": "",
-        "label": "Soil Moisture Level",
-        "format": "{{msg.payload.soil_moisture}}",
-        "layout": "row-spread",
-        "className": "",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#000000",
-        "x": 690,
-        "y": 340,
-        "wires": []
-    },
-    {
-        "id": "2d64600c3bd3a861",
-        "type": "ui_gauge",
-        "z": "310d8a4d72ef4192",
-        "name": "",
-        "group": "42c1300ca8929c56",
-        "order": 3,
-        "width": 0,
-        "height": 0,
-        "gtype": "gage",
-        "title": "Soil Moisture Level",
-        "label": "units",
-        "format": "{{msg.payload.soil_moisture}}",
-        "min": 0,
-        "max": 10,
-        "colors": [
-            "#00b500",
-            "#e6e600",
-            "#ca3838"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "diff": false,
-        "className": "",
-        "x": 690,
-        "y": 220,
-        "wires": []
     }
 ]
