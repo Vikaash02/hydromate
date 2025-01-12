@@ -236,16 +236,11 @@ def run_server():
     server_address = ('0.0.0.0', 5000)
     httpd = HTTPServer(server_address, SensorRequestHandler)
     print("Starting HTTP server on port 5000...")
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("\nShutting down server...")
-        httpd.server_close()
-        GPIO.cleanup()
-
+    httpd.serve_forever()
 
 # Main Control Logic
 try:
+    run_server()
     print("Starting Control Test.")
     black_line_detected = 0  # Counter to detect black lines
 
@@ -257,6 +252,7 @@ try:
             black_line_detected += 1
             stop_motors()
             data["ir_status"] = "Both IR sensors detect black line."
+            print(data["ir_status"])
             time.sleep(2)  # Wait for 2 seconds
 
             if black_line_detected == 1:  # First black line detection
@@ -265,6 +261,7 @@ try:
                 time.sleep(5)  # Wait for the water pump process to finish
 
                 data["motor_dir"] = "Moving forward after water pump process."
+                print(data["motor_dir"])
                 set_motor("left_motor", 30)
                 set_motor("right_motor", 30)
                 time.sleep(0.1)  # Small delay to ensure motors start properly
@@ -275,6 +272,7 @@ try:
                 time.sleep(5)  # Wait for the water pump process to finish
 
                 data["motor_dir"] = "Moving forward after second water pump process."
+                print(data["motor_dir"])
                 set_motor("left_motor", 30)
                 set_motor("right_motor", 30)
                 time.sleep(0.1)  # Small delay to ensure motors start properly
@@ -285,29 +283,31 @@ try:
                 time.sleep(5)  # Wait for the water pump process to finish
                 
                 data["motor_dir"] = "Exiting after third water pump process."
+                print(data["motor_dir"])
                 break  # Exit after third water pump process
         
         elif left_ir:  # Left IR detects black line
             data["ir_status"] = "Left IR detects black line. Adjusting right."
+            print(data["ir_status"])
             set_motor("left_motor", 50)  # Slight adjustment
             set_motor("right_motor", 30)
             data["motor_dir"] = "Slight adjustment"
 
         elif right_ir:  # Right IR detects black line
-            data["ir_status"] = "Right IR detects black line. Adjusting left.")
+            data["ir_status"] = "Right IR detects black line. Adjusting left."
+            print(data["ir_status"])
             set_motor("left_motor", 30)
             set_motor("right_motor", 50)  # Slight adjustment
             data["motor_dir"] = "Slight adjustment"
 
         else:  # No line detected, go straight
             data["ir_status"] = "No line detected."
+            print(data["ir_status"])
             set_motor("left_motor", 50)
             set_motor("right_motor", 50)
             data["motor_dir"] = "Moving straight."
 
         time.sleep(0.1)  # Small delay for stability
-
-    run_server()
 
 except KeyboardInterrupt:
     print("Test interrupted by user.")
