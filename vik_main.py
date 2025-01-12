@@ -134,26 +134,28 @@ def run_water_pump_process():
 
     # Stop for 5 seconds after clockwise rotation
     print("Stopping for 5 seconds...")
-    time.sleep(10)  # Stop for 5 seconds
-    read_soil_moisture()
+    time.sleep(5)  # Stop for 5 seconds
+    read_soil_moisture()  # Read soil moisture
+    print(f"Soil Moisture Percentage: {data['soil_moisture']}%")  # Debug output
     stop_count += 1
 
     # Rotate for 2.5 seconds counter-clockwise
     print("Rotating counter-clockwise for 2.5 seconds...")
     rotate_motor(GPIO.LOW, 1.2)  # Counter-clockwise rotation for 2.5 seconds
 
+    # Stop and check moisture level after second rotation
     stop_count += 1
-
-    # Check if it's the second 5-second stop
     if stop_count == 2:
-        if(data["soil_moisture"] < 0.3):
-            print("Second 5-second stop reached. Activating water pump...")
+        if data["soil_moisture"] < 30:  # Threshold for low soil moisture (adjust as needed)
+            print("Soil moisture is low. Activating water pump...")
             activate_pump()  # Activate water pump
             time.sleep(5)  # Keep the pump on for 5 seconds
             deactivate_pump()  # Deactivate the pump after 5 seconds
             stop_count = 0  # Reset stop counter after pump activation
         else:
+            print("Soil moisture is sufficient. No need to activate the water pump.")
             stop_count = 0
+
 
 # Function for reading water level
 # Function for reading water level and converting it to a percentage
